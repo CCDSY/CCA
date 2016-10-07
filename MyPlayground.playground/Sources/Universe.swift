@@ -7,7 +7,7 @@ public struct Universe {
     private typealias Coordinate = (x: Int, y: Int)
     
     public private(set) var grid: Snapshot
-//    public private(set) var history: [Snapshot]
+    //    public private(set) var history: [Snapshot]
     
     private subscript(coordinate: Coordinate) -> State {
         return grid[coordinate.x][coordinate.y]
@@ -23,7 +23,7 @@ public struct Universe {
         self.neighborDistance = neighborDistance
         
         self.grid = initialValues
-//        self.history = []
+        //        self.history = []
     }
     
     public mutating func iterate() {
@@ -35,7 +35,7 @@ public struct Universe {
             }
         }
         
-//        history.append(grid)
+        //        history.append(grid)
         grid = newIteration
     }
     
@@ -48,11 +48,6 @@ public struct Universe {
     }
     
     private func succeedingNeighborCountForCell(at coordinate: Coordinate) -> Int {
-        let successorOfCell = successor(for: self[coordinate])
-        return neighboringIndicesForCell(at: coordinate).filter { self[$0] == successorOfCell }.count
-    }
-    
-    private func neighboringIndicesForCell(at coordinate: Coordinate) -> [Coordinate] {
         func offset(_ coordinate: Coordinate, byDx dx: Int, dy: Int) -> Coordinate? {
             let result = (x: coordinate.x + dx, y: coordinate.y + dy)
             guard result.y >= 0 else { return nil }
@@ -62,16 +57,21 @@ public struct Universe {
             return result
         }
         
-        var results = [Coordinate]()
+        let successorOfCell = successor(for: self[coordinate])
+        var count = 0
+        
         for dx in -neighborDistance ... neighborDistance {
             for dy in -neighborDistance ... neighborDistance {
                 guard dx != 0 || dy != 0 else { continue }
                 guard let result = offset(coordinate, byDx: dx, dy: dy) else { continue }
                 
-                results.append(result)
+                if successor(for: self[result]) == successorOfCell {
+                    count += 1
+                }
             }
         }
-        return results
+        
+        return count
     }
     
     private func successor(for state: State) -> State {
