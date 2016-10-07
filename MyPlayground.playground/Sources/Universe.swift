@@ -9,6 +9,10 @@ public struct Universe {
     public var grid: Snapshot
     public private(set) var history: [Snapshot]
     
+    private subscript(coordinate: Coordinate) -> State {
+        return grid[coordinate.x][coordinate.y]
+    }
+    
     private let maxStateValue: State
     private let threshold: Int
     private let neighborDistance: Int
@@ -27,13 +31,25 @@ public struct Universe {
         
         for x in 0 ..< grid.count {
             for y in 0 ..< grid[x].count {
-                
+                newIteration[x][y] = newStateForCell(at: (x, y))
             }
+        }
+        
+        history.append(grid)
+        grid = newIteration
+    }
+    
+    private func newStateForCell(at coordinate: Coordinate) -> Int {
+        if succeedingNeighborCountForCell(at: coordinate) > threshold {
+            return successor(for: self[coordinate])
+        } else {
+            return self[coordinate]
         }
     }
     
-    private func succeedingNeighborForCell(at coordinate: Coordinate) {
-        neighboringIndicesForCell(at: coordinate).map(successor)
+    private func succeedingNeighborCountForCell(at coordinate: Coordinate) -> Int {
+        let successorOfCell = successor(for: self[coordinate])
+        return neighboringIndicesForCell(at: coordinate).filter { self[$0] == successorOfCell }.count
     }
     
     private func neighboringIndicesForCell(at coordinate: Coordinate) -> [Coordinate] {
