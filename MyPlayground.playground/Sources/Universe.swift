@@ -40,7 +40,7 @@ public struct Universe {
     }
     
     private func newStateForCell(at coordinate: Coordinate) -> Int {
-        if succeedingNeighborCountForCell(at: coordinate) > threshold {
+        if succeedingNeighborCountForCell(at: coordinate) >= threshold {
             return successor(for: self[coordinate])
         } else {
             return self[coordinate]

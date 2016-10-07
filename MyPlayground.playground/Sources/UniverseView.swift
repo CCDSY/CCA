@@ -1,42 +1,32 @@
-import UIKit
+import Cocoa
 import CoreGraphics
 
-public class UniverseView<DelegateType : UniverseViewDelegate> : UIView where DelegateType.State == Universe.State {
+public class UniverseView<DelegateType : UniverseViewDelegate> : NSView where DelegateType.State == Universe.State {
     
     public var universe: Universe? {
         didSet {
-            setNeedsDisplay()
+            needsDisplay = true
         }
     }
     
     public var borderWidth: CGFloat = 0 {
         didSet {
-            setNeedsDisplay()
+            needsDisplay = true
         }
     }
     
     public var delegate: DelegateType? {
         didSet {
-            setNeedsDisplay()
+            needsDisplay = true
         }
     }
     
-    public override init(frame: CGRect) {
-        super.init(frame: frame)
-        
-        isOpaque = true
-    }
-    
-    public required init?(coder aDecoder: NSCoder) {
-        super.init(coder: aDecoder)
-        
-        isOpaque = true
-    }
+    public override var isOpaque: Bool { return true }
     
     public override func draw(_ rect: CGRect) {
-        guard let context = UIGraphicsGetCurrentContext() else { return }
+        guard let context = NSGraphicsContext.current()?.cgContext else { return }
         
-        context.setFillColor((backgroundColor ?? UIColor.white).cgColor)
+        context.setFillColor(CGColor.white)
         context.fill(rect)
         
         actuallyDraw(bounds.insetBy(dx: 10, dy: 10), in: context)
@@ -45,7 +35,7 @@ public class UniverseView<DelegateType : UniverseViewDelegate> : UIView where De
     private func actuallyDraw(_ rect: CGRect, in context: CGContext) {
         let borderOffset = borderWidth / 2
         
-        context.setStrokeColor(delegate?.borderColor ?? UIColor.white.cgColor)
+        context.setStrokeColor(delegate?.borderColor ?? CGColor.white)
         context.stroke(rect.insetBy(dx: -borderOffset, dy: -borderOffset), width: borderWidth)
         
         guard let grid = self.universe?.grid else { return }
@@ -68,7 +58,7 @@ public class UniverseView<DelegateType : UniverseViewDelegate> : UIView where De
         
         for x in 0 ..< grid.count {
             for y in 0 ..< grid[0].count {
-                let color = delegate?.color(for: grid[x][y]) ?? UIColor.black.cgColor
+                let color = delegate?.color(for: grid[x][y]) ?? CGColor.black
                 
                 let x = cellWidth * CGFloat(x) + borderWidth * CGFloat(x - 1) + borderOffset + rect.minX
                 let y = cellHeight * CGFloat(y) + borderWidth * CGFloat(y - 1) + borderOffset + rect.minY
@@ -90,7 +80,7 @@ public class UniverseView<DelegateType : UniverseViewDelegate> : UIView where De
         
         timer = Timer.scheduledTimer(withTimeInterval: interval, repeats: true) { [unowned self] _ in
             self.iterate()
-            self.setNeedsDisplay()
+            self.needsDisplay = true
         }
     }
     
