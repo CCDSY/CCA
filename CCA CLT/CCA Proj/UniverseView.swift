@@ -23,21 +23,17 @@ public class UniverseView<DelegateType : UniverseViewDelegate> : NSView where De
         context.setFillColor(CGColor.white)
         context.fill(rect)
         
-        actuallyDraw(bounds.insetBy(dx: 10, dy: 10), in: context)
-    }
-    
-    private func actuallyDraw(_ rect: CGRect, in context: CGContext) {
         guard let grid = self.universe?.grid else { return }
         
-        let cellWidth = rect.width / CGFloat(grid.count)
-        let cellHeight = rect.height / CGFloat(grid[0].count)
+        let cellWidth = bounds.width / CGFloat(grid.count)
+        let cellHeight = bounds.height / CGFloat(grid[0].count)
         
         for x in 0 ..< grid.count {
             for y in 0 ..< grid[0].count {
                 let color = delegate?.color(for: grid[x][y]) ?? CGColor.black
                 
-                let x = cellWidth * CGFloat(x) + rect.minX
-                let y = cellHeight * CGFloat(y) + rect.minY
+                let x = cellWidth * CGFloat(x) + bounds.minX
+                let y = cellHeight * CGFloat(y) + bounds.minY
                 
                 context.setFillColor(color)
                 context.fill(CGRect(x: x, y: y, width: cellWidth, height: cellHeight))
