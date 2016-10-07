@@ -65,7 +65,7 @@ public struct Universe {
                 guard dx != 0 || dy != 0 else { continue }
                 guard let result = offset(coordinate, byDx: dx, dy: dy) else { continue }
                 
-                if successor(for: self[result]) == successorOfCell {
+                if self[result] == successorOfCell {
                     count += 1
                 }
             }
