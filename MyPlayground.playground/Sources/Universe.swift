@@ -7,7 +7,7 @@ public struct Universe {
     private typealias Coordinate = (x: Int, y: Int)
     
     public private(set) var grid: Snapshot
-    public private(set) var history: [Snapshot]
+//    public private(set) var history: [Snapshot]
     
     private subscript(coordinate: Coordinate) -> State {
         return grid[coordinate.x][coordinate.y]
@@ -23,7 +23,7 @@ public struct Universe {
         self.neighborDistance = neighborDistance
         
         self.grid = initialValues
-        self.history = []
+//        self.history = []
     }
     
     public mutating func iterate() {
@@ -35,7 +35,7 @@ public struct Universe {
             }
         }
         
-        history.append(grid)
+//        history.append(grid)
         grid = newIteration
     }
     
@@ -62,12 +62,16 @@ public struct Universe {
             return result
         }
         
-        return (-neighborDistance ... neighborDistance).flatMap { dx -> [Coordinate] in
-            (-neighborDistance ... neighborDistance).flatMap { dy -> Coordinate? in
-                guard dx != 0 || dy != 0 else { return nil }
-                return offset(coordinate, byDx: dx, dy: dy)
+        var results = [Coordinate]()
+        for dx in -neighborDistance ... neighborDistance {
+            for dy in -neighborDistance ... neighborDistance {
+                guard dx != 0 || dy != 0 else { continue }
+                guard let result = offset(coordinate, byDx: dx, dy: dy) else { continue }
+                
+                results.append(result)
             }
         }
+        return results
     }
     
     private func successor(for state: State) -> State {
