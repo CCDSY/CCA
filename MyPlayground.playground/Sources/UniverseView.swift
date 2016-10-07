@@ -15,7 +15,11 @@ public class UniverseView<DelegateType : UniverseViewDelegate> : UIView where De
         }
     }
     
-    public var delegate: DelegateType?
+    public var delegate: DelegateType? {
+        didSet {
+            setNeedsDisplay()
+        }
+    }
     
     public override init(frame: CGRect) {
         super.init(frame: frame)
