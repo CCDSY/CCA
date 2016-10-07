@@ -6,7 +6,7 @@ public struct Universe {
     public typealias Snapshot = [[State]]
     private typealias Coordinate = (x: Int, y: Int)
     
-    public var grid: Snapshot
+    public private(set) var grid: Snapshot
     public private(set) var history: [Snapshot]
     
     private subscript(coordinate: Coordinate) -> State {
