@@ -7,7 +7,6 @@ public struct Universe {
     private typealias Coordinate = (x: Int, y: Int)
     
     public private(set) var grid: Snapshot
-    //    public private(set) var history: [Snapshot]
     
     private subscript(coordinate: Coordinate) -> State {
         return grid[coordinate.x][coordinate.y]
@@ -16,14 +15,15 @@ public struct Universe {
     private let maxStateValue: State
     private let threshold: Int
     private let neighborDistance: Int
+    private let useVonneumannNeighbors: Bool
     
-    public init(maxStateValue: State, threshold: Int, neighborDistance: Int, initialValues: [[State]]) {
+    public init(maxStateValue: State, threshold: Int, neighborDistance: Int, initialValues: [[State]], useVonneumannNeighbors: Bool = false) {
         self.maxStateValue = maxStateValue
         self.threshold = threshold
         self.neighborDistance = neighborDistance
+        self.useVonneumannNeighbors = useVonneumannNeighbors
         
         self.grid = initialValues
-        //        self.history = []
     }
     
     public mutating func iterate() {
@@ -35,7 +35,6 @@ public struct Universe {
             }
         }
         
-        //        history.append(grid)
         grid = newIteration
     }
     
@@ -63,6 +62,7 @@ public struct Universe {
         for dx in -neighborDistance ... neighborDistance {
             for dy in -neighborDistance ... neighborDistance {
                 guard dx != 0 || dy != 0 else { continue }
+                guard !useVonneumannNeighbors || dx + dy <= neighborDistance else { continue }
                 guard let result = offset(coordinate, byDx: dx, dy: dy) else { continue }
                 
                 if self[result] == successorOfCell {

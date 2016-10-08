@@ -16,8 +16,10 @@ func main() {
         return
     }
     
+    let useVonneumannNeighbors = (CommandLine.arguments.count >= 6 ? Int(CommandLine.arguments[5]) ?? 0 : 0) == 0 ? false : true
+    
     let baseUrl = URL(fileURLWithPath: FileManager.default.currentDirectoryPath)
-    let fileName = CommandLine.arguments.count >= 6 ? CommandLine.arguments[5] : "Output.png"
+    let fileName = CommandLine.arguments.count >= 7 ? CommandLine.arguments[6] : "Output.png"
     let outputUrl = URL(fileURLWithPath: fileName, relativeTo: baseUrl)
     
     print("Starting universe...")
@@ -39,7 +41,7 @@ func main() {
         return
     }
     
-    var universe = Universe(maxStateValue: 8, threshold: threshold, neighborDistance: neighborDistance, width: dimension, height: dimension)
+    var universe = Universe(maxStateValue: 8, threshold: threshold, neighborDistance: neighborDistance, width: dimension, height: dimension, useVonneumannNeighbors: useVonneumannNeighbors)
     
     for i in 0 ..< iterationCount {
         print("Iteration: \(i)")
